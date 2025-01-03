@@ -4,6 +4,16 @@ import InvoiceStatus from '@/app/ui/invoices/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredInvoices } from '@/app/lib/data';
 
+type InvoicePerCustomer = {
+  id : string,
+  amount : number,
+  date : string,
+  status : string,
+  name : string,
+  email : string,
+  image_url : string,
+};
+
 export default async function InvoicesTable({
   query,
   currentPage,
@@ -11,7 +21,7 @@ export default async function InvoicesTable({
   query: string;
   currentPage: number;
 }) {
-  const invoices = await fetchFilteredInvoices(query, currentPage);
+  const invoices : InvoicePerCustomer[] = await fetchFilteredInvoices(query, currentPage);
 
   return (
     <div className="mt-6 flow-root">
