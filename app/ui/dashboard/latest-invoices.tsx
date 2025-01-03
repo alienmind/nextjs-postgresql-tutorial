@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import { lusitana } from '@/app/ui/fonts';
 import { fetchLatestInvoices } from '@/app/lib/data';
-import { Invoice } from '@/app/lib/definitions';
+import { type InvoicePerCustomer } from '@/app/lib/definitions';
 
 //import { LatestInvoice } from '@/app/lib/definitions';
 /*
@@ -15,7 +15,7 @@ export default async function LatestInvoices({
   */
 
 export default async function LatestInvoices() {
-  const latestInvoices = await fetchLatestInvoices();
+  const latestInvoices : InvoicePerCustomer[] = await fetchLatestInvoices();
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
@@ -23,7 +23,7 @@ export default async function LatestInvoices() {
       </h2>
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
         <div className="bg-white px-6">
-          {latestInvoices.map((invoice : any, i : any) => {
+          {latestInvoices.map((invoice : InvoicePerCustomer, i : number) => {
             return (
               <div
                 key={invoice.id}

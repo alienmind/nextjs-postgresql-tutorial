@@ -3,16 +3,7 @@ import { UpdateInvoice, DeleteInvoice } from '@/app/ui/invoices/buttons';
 import InvoiceStatus from '@/app/ui/invoices/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredInvoices } from '@/app/lib/data';
-
-type InvoicePerCustomer = {
-  id : string,
-  amount : number,
-  date : string,
-  status : string,
-  name : string,
-  email : string,
-  image_url : string,
-};
+import { type InvoicePerCustomer } from '@/app/lib/definitions';
 
 export default async function InvoicesTable({
   query,
