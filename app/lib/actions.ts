@@ -1,10 +1,31 @@
 'use server';
  
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 import { z } from 'zod';
 const connectionPool = require('../../db');
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
  
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
+}
+
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
@@ -55,7 +76,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
  
   // Insert data into the database
   try {
-    connectionPool.query(`
+    await connectionPool.query(`
       INSERT INTO invoices (customer_id, amount, status, date)
       VALUES ('${customerId}', ${amountInCents}, '${status}', '${date}')
     `);
@@ -96,7 +117,7 @@ export async function updateInvoice(
   const amountInCents = amount * 100;
  
   try {
-    connectionPool.query(`
+    await connectionPool.query(`
       UPDATE invoices
       SET customer_id = '${customerId}', amount = ${amountInCents}, status = '${status}'
       WHERE id = '${id}'
@@ -112,7 +133,7 @@ export async function deleteInvoice(id: string) {
   // Test error
   // throw new Error('Failed to Delete Invoice');
   try {
-    connectionPool.query(`DELETE FROM invoices WHERE id = '${id}'`);
+    await connectionPool.query(`DELETE FROM invoices WHERE id = '${id}'`);
     revalidatePath('/dashboard/invoices');
   } catch (_error) {
     return; /* {
